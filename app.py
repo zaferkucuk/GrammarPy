@@ -30,6 +30,8 @@ url=st.text_input("URL", "")
 # #if check_url==True:
 #     #st.write(get_url()) 
 
+tabs=["Extracted Text", "Check Result"]
+
 def get_html():
     #url=get_url()
     full_url='http://'+url
@@ -49,18 +51,25 @@ cleaned_text2 = re.sub("([-+@#^/|*(){}$~`<>=_])|(\[)|(\])|([0-9])", "", text)
 #cleaned_text2 = int(text).replace("\n","", text)
 cleaned_text2
 
-dir(SpellChecker)
-def check():
-    dir(SpellChecker)
-    spell=SpellChecker()
-    #cleaned_text=clean_text()
-    splitted_text = cleaned_text2.split()
-    print(splitted_text)
-    for word in splitted_text:
-        a=[]
-        if word != spell.correction(word):
-            a.append(spell.correction(word))
-            print(f'{word}:{a}')
-    return check
-check()
-
+# dir(SpellChecker)
+# def check():
+#     dir(SpellChecker)
+#     spell=SpellChecker()
+#     #cleaned_text=clean_text()
+#     splitted_text = cleaned_text2.split()
+#     print(splitted_text)
+#     for word in splitted_text:
+#         a=[]
+#         if word != spell.correction(word):
+#             a.append(spell.correction(word))
+#             print(f'{word}:{a}')
+#     return check
+# check()
+st.write("Result:")
+## language_tool_python
+import language_tool_python
+test_text="Photo by Gren Chameleon on Unsplash Transfor Learning came as a game changer for all the NLP researchers, so before diving in let’s quickly revisit what transfer learning is. Transfer learning is a machine learning method where a model developed for a task is reused as the starting point for a model on a second task. Simply it leverages prior knowledge from one domain and task into a different domain and task. Luckily for us, we have various such models, which have prior knowledge about the language and its semantics, so we will just use those knowledgeable models and see how they perform on the task we have in handhere checking grammar. "
+tool = language_tool_python.LanguageTool('en-US')
+corrected_text=tool.correct(cleaned_text2)
+#print(corrected_text)
+st.write(corrected_text)
