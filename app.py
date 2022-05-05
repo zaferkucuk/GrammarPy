@@ -1,3 +1,4 @@
+#from functions import get_html, get_url
 import streamlit as st
 import requests
 import pandas as pd
@@ -22,11 +23,44 @@ st.set_page_config(page_title='Grammar Checker')
 
 ##if page=="input":
 st.markdown("<h1 style='text-align:center;>Check grammar of your website'</h1>", unsafe_allow_html=True)
-st.write("""Enter website URL you want to check for grammar""")
+st.write("""Enter website URL you want to check for grammar recommendations""")
 
-def get_url(url):
-    url = st.text_input("URL", "")
-    return url
+url=st.text_input("URL", "")
+# check_url=st.button('Check URL')
+# #if check_url==True:
+#     #st.write(get_url()) 
 
-check_url=st.button('Check URL')
+def get_html():
+    #url=get_url()
+    full_url='http://'+url
+    #print(url)
+    #print(full_url)
+    response = requests.get(full_url)    
+    #response.status_code
+    test_html = response.text
+    print(test_html)
+    return test_html
+get_html()
+
+
+soup = BeautifulSoup(get_html(), 'html.parser')
+text = soup.get_text(separator=' ')
+cleaned_text2 = re.sub("([-+@#^/|*(){}$~`<>=_])|(\[)|(\])|([0-9])", "", text)
+#cleaned_text2 = int(text).replace("\n","", text)
+cleaned_text2
+
+dir(SpellChecker)
+def check():
+    dir(SpellChecker)
+    spell=SpellChecker()
+    #cleaned_text=clean_text()
+    splitted_text = cleaned_text2.split()
+    print(splitted_text)
+    for word in splitted_text:
+        a=[]
+        if word != spell.correction(word):
+            a.append(spell.correction(word))
+            print(f'{word}:{a}')
+    return check
+check()
 

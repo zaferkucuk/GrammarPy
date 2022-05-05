@@ -1,4 +1,5 @@
 import requests
+import streamlit as st
 import pandas as pd
 import numpy as np
 import re
@@ -12,20 +13,40 @@ from argparse import ArgumentParser
 from bs4 import BeautifulSoup
 import urllib.request
 import language_tool_python
-from spellchecker import SpellChecker
+#from spellchecker import SpellChecker
 import json
 
-def get_url(url):
-    return url
+# def get_url():
+#     url = st.text_input("URL", "")
+#     return url
 
-def get_text(page_text):
-    return page_text
+# def get_html():
+#     url=get_url()
+#     response = requests.get(url)
+#     response
+#     response.status_code
+#     test_html = response.text
+#     print(test_html)
+#     return test_html
 
-def clean_text(cleaned_text):
-    return cleaned_text
+# #def get_text(my_text):
+#     #soup = BeautifulSoup(get_html(), 'html.parser')
+#     #return my_text
+# soup = BeautifulSoup(get_html(), 'html.parser')
 
-def check_words(words):
-    return words
+# def clean_text():
+#     text = soup.get_text(separator=' ')
+#     cleaned_text = re.sub(r"(@\[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)|^rt|http.+?", "", text)
+#     return cleaned_text
 
-def check_grammar(grammar):
-    return grammar
+# def check():
+#     dir(SpellChecker)
+#     spell=SpellChecker()
+#     splitted_text = clean_text().split()
+#     print(splitted_text)
+#     for word in splitted_text:
+#         a=[]
+#         if word != spell.correction(word):
+#             a.append(spell.correction(word))
+#         print(f'{word}:{a}')
+#     return check
