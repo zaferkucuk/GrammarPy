@@ -1,6 +1,3 @@
-import streamlit as st
-
-
 from rich.prompt import Prompt
 from rich.console import Console
 from random import choice
@@ -12,7 +9,7 @@ SQUARES = {
     'incorrect_letter': '⬛'
 }
 
-WELCOME_MESSAGE = f'\n[white on blue] WELCOME TO WORDLE OF GRAMMARPY [/]\n'
+WELCOME_MESSAGE = f'\n[white on blue] WELCOME TO WORDLE [/]\n'
 PLAYER_INSTRUCTIONS = "You may start guessing\n"
 GUESS_STATEMENT = "\nEnter your guess"
 ALLOWED_GUESSES = 6

@@ -23,26 +23,33 @@ from PIL import Image
 
 #------print-------#
 
-
-
-#------print-------#
 logo_small=Image.open("logo2.png")
 st.set_page_config(page_title='GrammarPy', page_icon=logo_small)
-
+hide_st_style="""
+<style>
+footer {visibility: hidden;}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
+col1, col2, col3, col4, col5 = st.columns(5)
+with col3:
+    from PIL import Image
+    image = Image.open('GrammarPy_Logo1.png', )
 ##page=st.sidebar.radio("Tabs", tabs)
-
 ##if page=="input":
-from PIL import Image
-image = Image.open('GrammarPy_Logo1.png')
-
-st.image(image, width=160)
-st.markdown("<h1 style='text-align:center;>Check grammar of your website'</h1>", unsafe_allow_html=True)
-st.write("""Enter website URL you want to check for grammar recommendations""")
+    st.image(image, width=160)
+#st.markdown("<h1 style='text-align:center;>Check grammar of your website'</h1>", unsafe_allow_html=True)
+#st.title("<h1 style='text-align:center;"""Enter website URL you want to check for grammar recommendations"""</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; '>Grammar Checker for Websites</h4>", unsafe_allow_html=True)
 
 
+url=st.text_input("Enter the web page url (without http://)", "")
+col1, col2, col3, col4, col5 = st.columns(5)
+with col3:
+    check_url=st.button('   Let`s go!   ')
 
-url=st.text_input("URL", "")
-check_url=st.button('Check Grammar')
+
+
 if check_url==True:
          
         col1, col2, col3, col4 = st.columns(4)
@@ -63,45 +70,44 @@ if check_url==True:
             for percent_complete in range(100):
                 time.sleep(0.1)
                 my_bar.progress(percent_complete + 1)
+        with col2:
+            soup = BeautifulSoup(get_html(), 'html.parser')
+            text = soup.get_text(separator=' ')
+            cleaned_text2 = re.sub("([+#^/|*(){}$~`<>=_])|(\[)|(\])", "", text)
+            #cleaned_text2 = re.sub("([-+@#^/|*(){}$~`<>=_])|(\[)|(\])|([0-9])", "", text)
+            #cleaned_text2 = int(text).replace("\n","", text)
+            #cleaned_text2
+                    #progress bar
+            my_bar = st.progress(0)
+            for percent_complete in range(100):
+                time.sleep(0.1)
+                my_bar.progress(percent_complete + 1)
+        with col3:
+           
+            #st.write("Result:")
+            ## language_tool_python
+            
+            tool = language_tool_python.LanguageTool('en-US')
+            my_bar = st.progress(0)
+            for percent_complete in range(100):
+                time.sleep(0.1)
+                my_bar.progress(percent_complete + 1)
+        with col4:
+            corrected_text=tool.correct(cleaned_text2)
+            #st.write(corrected_text)
+                    #progress bar
+            my_bar = st.progress(0)
+            for percent_complete in range(100):
+                time.sleep(0.1)
+                my_bar.progress(percent_complete + 1)
 
-        soup = BeautifulSoup(get_html(), 'html.parser')
-        text = soup.get_text(separator=' ')
-        cleaned_text2 = re.sub("([+#^/|*(){}$~`<>=_])|(\[)|(\])", "", text)
-        #cleaned_text2 = re.sub("([-+@#^/|*(){}$~`<>=_])|(\[)|(\])|([0-9])", "", text)
-        #cleaned_text2 = int(text).replace("\n","", text)
-        #cleaned_text2
-                #progress bar
-        my_bar = st.progress(0)
-        for percent_complete in range(100):
-            time.sleep(0.1)
-            my_bar.progress(percent_complete + 1)
-        ##---------original/corrected sentences-------##
-        #st.write("Result:")
-        ## language_tool_python
-        import language_tool_python
-        tool = language_tool_python.LanguageTool('en-US')
-        corrected_text=tool.correct(cleaned_text2)
-        #st.write(corrected_text)
-                #progress bar
-        my_bar = st.progress(0)
-        for percent_complete in range(100):
-            time.sleep(0.1)
-            my_bar.progress(percent_complete + 1)
-        with st.expander("See original text"):
-            st.write(cleaned_text2)
-        st.download_button('Download original text', cleaned_text2, 'text/csv')
-        with st.expander("See corrected text"):
-            st.write(corrected_text)
-        st.download_button('Download corrected text', cleaned_text2, 'text/csv')
-        ##---------original/corrected sentences-------##
-
-        
+##----------------original/corrected/wrong words----------------##
         #st.write("Misspelled words:")
         words_original = cleaned_text2.split()
-        st.write(words_original)
-
+        #st.write(words_original)
+        #st.write("words_corrected")
         words_corrected = corrected_text.split()
-        st.write(words_corrected)
+        #st.write(words_corrected)
 
         wrong_words=[]
         for word in words_original:
@@ -109,102 +115,138 @@ if check_url==True:
                 wrong_words.append(word)
             else:
                 pass
-        st.write(wrong_words)
+        #st.write(wrong_words)
+##----------------original/corrected/wrong words----------------##
+
+
+##-----------------split sentences------------------------------##
+        alphabets= "([A-Za-z])"
+        prefixes = "(Mr|St|Mrs|Ms|Dr)[.]"
+        suffixes = "(Inc|Ltd|Jr|Sr|Co)"
+        starters = "(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)"
+        acronyms = "([A-Z][.][A-Z][.](?:[A-Z][.])?)"
+        websites = "[.](com|net|org|io|gov)"
+
+        def split_into_sentences(text):
+            text = " " + text + "  "
+            text = text.replace("\n"," ")
+            text = re.sub(prefixes,"\\1<prd>",text)
+            text = re.sub(websites,"<prd>\\1",text)
+            if "Ph.D" in text: text = text.replace("Ph.D.","Ph<prd>D<prd>")
+            text = re.sub("\s" + alphabets + "[.] "," \\1<prd> ",text)
+            text = re.sub(acronyms+" "+starters,"\\1<stop> \\2",text)
+            text = re.sub(alphabets + "[.]" + alphabets + "[.]" + alphabets + "[.]","\\1<prd>\\2<prd>\\3<prd>",text)
+            text = re.sub(alphabets + "[.]" + alphabets + "[.]","\\1<prd>\\2<prd>",text)
+            text = re.sub(" "+suffixes+"[.] "+starters," \\1<stop> \\2",text)
+            text = re.sub(" "+suffixes+"[.]"," \\1<prd>",text)
+            text = re.sub(" " + alphabets + "[.]"," \\1<prd>",text)
+            if "”" in text: text = text.replace(".”","”.")
+            if "\"" in text: text = text.replace(".\"","\".")
+            if "!" in text: text = text.replace("!\"","\"!")
+            if "?" in text: text = text.replace("?\"","\"?")
+            text = text.replace(".",".<stop>")
+            text = text.replace("?","?<stop>")
+            text = text.replace("!","!<stop>")
+            text = text.replace("<prd>",".")
+            sentences = text.split("<stop>")
+            sentences = sentences[:-1]
+            sentences = [s.strip() for s in sentences]
+            return sentences
+        splitted_sentences_original=split_into_sentences(cleaned_text2)
+        #splitted_sentences_original
+
+        splitted_sentences_corrected=split_into_sentences(corrected_text)
+        #splitted_sentences_corrected
+
+        wrong_sentences=[]
+        for word in splitted_sentences_original:
+            if word not in splitted_sentences_corrected:
+                wrong_sentences.append(word)
+        #wrong_sentences  
+
+
+##---------------------split words------------------------------##
+        original_words = cleaned_text2.split()
+        corrected_words = corrected_text.split()
+
+        wordle = pd.DataFrame(corrected_words)
+        wordle.to_csv('file2.csv', index=False, header=False)
+        #original_words.to_csv('C:/Users\Guest1\Projects\grammar_checker\wordle_words\"wordle".csv')
+        #st.download_button('send words', original_words, 'wordle/csv')
+
+##-------------highlighted sentences/words----------------------##
+        #st.write("try")
+        list_of_words=[]
+        for word in original_words:
+            #print(word)
+            if word not in corrected_words:
+                #print(word)
+                list_of_words.append((word, "#afa"))
+            else:
+                list_of_words.append(word)
+        #st.write("this one")
+        #for word in list_of_words:
+            #annotated_text(word)
         
+        underlined_sentence=[]
+        for sentence in splitted_sentences_original:
+            if sentence not in splitted_sentences_corrected:
+                underlined_sentence.append((sentence," ", "#afa"))
+            else:
+                underlined_sentence.append(sentence)
+
+        underlined_words=[]
+        for word in words_original:
+            if word not in words_corrected:
+                underlined_words.append((word, "#afa"))
+            else:
+                underlined_words.append(word)
+        underlined_sentence2=[]
+
+        #underlined_sentence2=[]
+        for sentence in splitted_sentences_original:
+            if sentence not in splitted_sentences_corrected:
+                #print(sentence)
+                underlined_words2=[]
+                for word in sentence.split():
+                    #print(word)
+                    if word not in words_corrected:
+                        #print(word)
+                        underlined_words2.append((word, "#8ef"))
+                        #print(underlined_words2)
+                underlined_sentence2.extend((sentence, underlined_words2))
+            else:
+                underlined_sentence2.append(sentence)
+
+        # with st.echo():
+        #     for sentence in underlined_sentence2:
+        #         annotated_text(sentence)
+        
+        for sentence in underlined_sentence:
+            annotated_text(sentence)
+
+        # for word in underlined_words:
+        #     annotated_text(word)
+
+        # for sentence in underlined_sentence2:
+        #     annotated_text(sentence)
+##-------------highlighted sentences/words----------------------##
+
+##-------------------original/corrected texts-------------------##
+        with st.expander("See original text"):
+            st.write(cleaned_text2)
+        with st.expander("See corrected text"):
+            st.write(corrected_text)
+##-------------------download-------------------##
+        st.write("Download files")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.download_button('Original Text', cleaned_text2, 'original_text/txt')
+        with col2:
+            st.download_button('Corrected Text', cleaned_text2, 'corrected_text/txt')
+##-------------------original/corrected texts-------------------##
 
 
-##-------split sentences-----##
-alphabets= "([A-Za-z])"
-prefixes = "(Mr|St|Mrs|Ms|Dr)[.]"
-suffixes = "(Inc|Ltd|Jr|Sr|Co)"
-starters = "(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)"
-acronyms = "([A-Z][.][A-Z][.](?:[A-Z][.])?)"
-websites = "[.](com|net|org|io|gov)"
-
-def split_into_sentences(text):
-    text = " " + text + "  "
-    text = text.replace("\n"," ")
-    text = re.sub(prefixes,"\\1<prd>",text)
-    text = re.sub(websites,"<prd>\\1",text)
-    if "Ph.D" in text: text = text.replace("Ph.D.","Ph<prd>D<prd>")
-    text = re.sub("\s" + alphabets + "[.] "," \\1<prd> ",text)
-    text = re.sub(acronyms+" "+starters,"\\1<stop> \\2",text)
-    text = re.sub(alphabets + "[.]" + alphabets + "[.]" + alphabets + "[.]","\\1<prd>\\2<prd>\\3<prd>",text)
-    text = re.sub(alphabets + "[.]" + alphabets + "[.]","\\1<prd>\\2<prd>",text)
-    text = re.sub(" "+suffixes+"[.] "+starters," \\1<stop> \\2",text)
-    text = re.sub(" "+suffixes+"[.]"," \\1<prd>",text)
-    text = re.sub(" " + alphabets + "[.]"," \\1<prd>",text)
-    if "”" in text: text = text.replace(".”","”.")
-    if "\"" in text: text = text.replace(".\"","\".")
-    if "!" in text: text = text.replace("!\"","\"!")
-    if "?" in text: text = text.replace("?\"","\"?")
-    text = text.replace(".",".<stop>")
-    text = text.replace("?","?<stop>")
-    text = text.replace("!","!<stop>")
-    text = text.replace("<prd>",".")
-    sentences = text.split("<stop>")
-    sentences = sentences[:-1]
-    sentences = [s.strip() for s in sentences]
-    return sentences
-splitted_sentences_original=split_into_sentences(cleaned_text2)
-#splitted_sentences_original
-
-splitted_sentences_corrected=split_into_sentences(corrected_text)
-#splitted_sentences_corrected
-
-false_words=[]
-for word in splitted_sentences_original:
-    if word not in splitted_sentences_corrected:
-        false_words.append(word)
-false_words  
-
-original_words = cleaned_text2.split()
-corrected_words = corrected_text.split()
-
-wordle = pd.DataFrame(corrected_words)
-wordle.to_csv('file2.csv', index=False, header=False)
-#original_words.to_csv('C:/Users\Guest1\Projects\grammar_checker\wordle_words\"wordle".csv')
-#st.download_button('send words', original_words, 'wordle/csv')
-
-st.write("try")
-underlined_sentence=[]
-for sentence in splitted_sentences_original:
-    if sentence not in splitted_sentences_corrected:
-        underlined_sentence.append((sentence, "#8ef"))
-    else:
-         underlined_sentence.append(sentence)
-
-underlined_words=[]
-for word in words_original:
-    if word not in words_corrected:
-        underlined_words.append((word, "#afa"))
-    else:
-         underlined_words.append(word)
-
-underlined_sentence2=[]
-
-# for sentence in splitted_sentences_original:
-#     if sentence not in splitted_sentences_corrected:
-#         underlined_words2=[]
-#         for i in sentence:
-#             if i not in words_corrected:
-#                 underlined_words2.append((i, "#afa"))
-#             underlined_sentence2.extend((sentence, underlined_words2))
-#     else:
-#          underlined_sentence2.append(sentence)
-
-with st.echo():
-    for sentence in underlined_sentence2:
-        annotated_text(sentence)
-
-
-with st.echo():
-    for sentence in underlined_sentence:
-        annotated_text(sentence)
-
-with st.echo():
-    for word in underlined_words:
-        annotated_text(word)
 
 
 
@@ -215,13 +257,13 @@ with st.echo():
 # with st_capture(output.code):
 #     print(underlined_text)
 
-for word in original_words:
-    mistaken_words=[]
-    if word not in corrected_words:
-        mistaken_words.append(word)        
+# for word in original_words:
+#     mistaken_words=[]
+#     if word not in corrected_words:
+#         mistaken_words.append(word)        
     #mistaken_words = list(filter(None, mistaken_words))
     #mistaken_words = [s for s in mistaken_words if not mistaken_words == '']
-mistaken_words
+#mistaken_words
     # for i in mistaken_words:
     #     if i == '':
     #         mistaken_words.remove(i)
@@ -260,7 +302,7 @@ mistaken_words
 
 
 # with st.echo():
-#     annotated_text(false_words, "#8ef")
+#     annotated_text(wrong_sentences, "#8ef")
 
 
 
@@ -276,7 +318,7 @@ mistaken_words
 
  
 
-#with st.echo():[false_words, "#faa"]
+#with st.echo():[wrong_sentences, "#faa"]
     
 
 
