@@ -4,6 +4,25 @@ import pandas as pd
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from IPython.display import display
+#from file2.csv import corrected_words
+import streamlit as st
+import random
+
+#st.write(corrected_words)
+df=pd.read_csv("file2.csv", header=None)
+corrected_words=df[0].values
+#print(df)
+#print(corrected_words)
+word_list_short=[]
+for i in corrected_words:
+    if len(i)==5:
+        word_list_short.append(i)
+    else:
+        pass
+#print(word_list_short)
+my_word=random.choice(word_list_short)
+print(my_word)
+#exit()
 
 def pick_random_word():
     #Instantiate randomizer
@@ -17,12 +36,14 @@ def pick_random_word():
 #         print(f'Word is: {true_word}')
         return true_word
 
+
+
 #Ask User Input
 def ask_user_input(guru = None):
     while True:
-        guru = input ("Enter a 5-letter Word :")
+        guru = input ("Guess a word :")
         if type(guru) != str or len(guru) != 5:
-            print('Invalid Entry')
+            print('invalid entry')
             continue
         else:
             return guru.upper()
@@ -63,7 +84,8 @@ def mark_letters(guess_idx):
 #############################################
 def play_wordle():
     #Instantiate True word
-    true_word = pick_random_word()
+    #true_word = pick_random_word()
+    true_word=my_word
     
     #Turn true word into array of individual letters and indexes
     true_arr = np.array(list(true_word.upper()))

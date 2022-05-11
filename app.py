@@ -44,8 +44,8 @@ st.markdown("<h4 style='text-align: center; '>Grammar Checker for Websites</h4>"
 
 
 url=st.text_input("Enter the web page url (without http://)", "")
-col1, col2, col3, col4, col5 = st.columns(5)
-with col3:
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7) #I don`t know to place center the button :(
+with col4:
     check_url=st.button('   Let`s go!   ')
 
 
@@ -221,21 +221,70 @@ if check_url==True:
         # with st.echo():
         #     for sentence in underlined_sentence2:
         #         annotated_text(sentence)
-        
-        for sentence in underlined_sentence:
-            annotated_text(sentence)
-
         # for word in underlined_words:
         #     annotated_text(word)
 
         # for sentence in underlined_sentence2:
         #     annotated_text(sentence)
-##-------------highlighted sentences/words----------------------##
+##-------------Carmine----------------------##
+        def colour_to_word(word, color='black'):
+            return f"<text style=color:{color}>{word}</text>"
 
+        #corrected_words = ['ciao','hello']
+        #text = "cia hallo ciao hello"
+        text_to_annotated_list = []
+        for word in cleaned_text2.split():
+            if word not in words_corrected:
+                text_to_annotated_list.append(colour_to_word(word,color='red'))
+            else:
+                text_to_annotated_list.append(word)
+
+        #print(text_to_annotated_list)
+
+
+        text_to_annoted = " ".join(text_to_annotated_list)
+        #print(text_to_annoted)
+##------------------------pages------------------------------##
+        # from streamlit_option_menu import option_menu
+        # selected = option_menu(
+        #     menu_title=None,  # required
+        #     options=["Original", "Corrected", "Download"],  # required
+        #     icons=["house", "book", "envelope"],  # optional
+        #     menu_icon="cast",  # optional
+        #     default_index=0,  # optional
+        #     orientation="horizontal",
+        #     styles={
+        #         "container": {"padding": "0!important", "background-color": "#FFFFFF"},
+        #         "icon": {"color": "#EDDABE", "font-size": "25px"},
+        #         "nav-link": {
+        #             #"font-size": "25px",
+        #             "text-align": "center",
+        #             "margin": "0px",
+        #             "--hover-color": "#fafafa",
+        #         },
+        #         "nav-link-selected": {"background-color": "#fafafa"},
+        #     },
+        # )
+
+
+
+        
+        # page_names=['Sentences','Words']
+        # page=st.radio('Result', page_names)
+        # if page is "Sentences":
+        #     for sentence in underlined_sentence:
+        #         annotated_text(sentence)
+        # if page is "Words":
+        #     st.markdown(text_to_annoted,unsafe_allow_html=True )
 ##-------------------original/corrected texts-------------------##
-        with st.expander("See original text"):
-            st.write(cleaned_text2)
-        with st.expander("See corrected text"):
+        # with st.expander("See original content"):
+        #     st.write(cleaned_text2)
+        with st.expander("See original content"):
+            for sentence in underlined_sentence:
+                annotated_text(sentence)
+        with st.expander("See the wrong words"):
+            st.markdown(text_to_annoted,unsafe_allow_html=True )
+        with st.expander("See corrected content"):
             st.write(corrected_text)
 ##-------------------download-------------------##
         st.write("Download files")
