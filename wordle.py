@@ -8,8 +8,9 @@ from IPython.display import display
 import streamlit as st
 import random
 
+##----------------random word from given URL------------##
 #st.write(corrected_words)
-df=pd.read_csv("file2.csv", header=None)
+df=pd.read_csv("word_list.csv", header=None)
 corrected_words=df[0].values
 #print(df)
 #print(corrected_words)
@@ -24,6 +25,7 @@ my_word=random.choice(word_list_short)
 print(my_word)
 #exit()
 
+##----------------random word (alternative way)------------##
 def pick_random_word():
     #Instantiate randomizer
     r = RandomWords()
@@ -37,8 +39,7 @@ def pick_random_word():
         return true_word
 
 
-
-#Ask User Input
+##-------------------------User Input--------------------##
 def ask_user_input(guru = None):
     while True:
         guru = input ("Guess a word :")
@@ -48,7 +49,7 @@ def ask_user_input(guru = None):
         else:
             return guru.upper()
 
-#Change Letter Colors
+##-------------------------Letter Colors--------------------##
 def color_positive(val):
     if val == val.upper() and len(val) == 1:
         color = 'green'
@@ -58,9 +59,10 @@ def color_positive(val):
         color = 'black'
     return 'color: %s' % color
 
+##-------------------------Build matrix table--------------------##
 def build_df(attempt, guess_arr):
-    cols = ['L1', 'L2', 'L3', 'L4', 'L5']
-    idx = ['TRY_' + str(attempt +1)]
+    cols = ['LETTER1', 'LETTER2', 'LETTER3', 'LETTER4', 'LETTER5']
+    idx = ['GUESS_' + str(attempt +1)]
     
     df = pd.DataFrame(guess_arr).T
     df.columns = cols
@@ -79,9 +81,7 @@ def mark_letters(guess_idx):
             final.append(item[0].lower()) 
     return final
 
-#############################################
-############  MAIN FUNCTION ################
-#############################################
+##-------------------------Main Function--------------------##
 def play_wordle():
     #Instantiate True word
     #true_word = pick_random_word()
@@ -147,20 +147,20 @@ def play_wordle():
         s = new_df.style.applymap(color_positive)
         display(s)
 
-        if guess_word.lower() == true_word:
-            print('##############################################################')
-            print(f'       HURRAY THE WORD WAS: {true_word.upper()} ')
-            print('##############################################################')
-            print('YOU ARE A HUMAN GENIUS! YOU SHOULD BE FEARED AND RESPECTED!!!')
-            print('Give yourself a pat on the shoulder :)')
-            print("That student debt is finally paying off!!!")
-            print("WANNA PLAY AGAIN?")
+        if guess_word.lower()  == true_word or guess_word.upper()  == true_word:
+            #print('##############################################################')
+            print(f'       Congragulations! The word was: {true_word.upper()} ')
+            #print('##############################################################')
+            #print('YOU ARE A HUMAN GENIUS! YOU SHOULD BE FEARED AND RESPECTED!!!')
+            #print('Give yourself a pat on the shoulder :)')
+            #print("That student debt is finally paying off!!!")
+            #print("WANNA PLAY AGAIN?")
             break
         else:
             attempt += 1
             
             if attempt == 6:
-                print(f'Sorry, gotta read more BOOKS! The word was {true_word.upper()}, OBIOUSLY...')
+                print(f'You lost! The word was {true_word.upper()}, ...')
                 break
 
 if __name__ == '__main__':

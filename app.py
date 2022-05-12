@@ -21,7 +21,7 @@ import time
 from annotated_text import annotated_text, annotation
 from PIL import Image
 
-#------print-------#
+##--------------------------page setup------------------------------##
 
 logo_small=Image.open("logo2.png")
 st.set_page_config(page_title='GrammarPy', page_icon=logo_small)
@@ -31,7 +31,7 @@ footer {visibility: hidden;}
 </style>
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5= st.columns(5)
 with col3:
     from PIL import Image
     image = Image.open('GrammarPy_Logo1.png', )
@@ -43,20 +43,20 @@ with col3:
 st.markdown("<h4 style='text-align: center; '>Grammar Checker for Websites</h4>", unsafe_allow_html=True)
 
 
-url=st.text_input("Enter the web page url (without http://)", "")
+url=st.text_input("", "")
 col1, col2, col3, col4, col5, col6, col7 = st.columns(7) #I don`t know to place center the button :(
 with col4:
     check_url=st.button('   Let`s go!   ')
 
 
-
+##--------------------------web scraping------------------------------##
 if check_url==True:
-         
+    with st.spinner('Data is analyzing...'):
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             def get_html():
                 #url=get_url()
-                full_url='http://'+url
+                full_url=url
                 #print(url)
                 #print(full_url)
                 response = requests.get(full_url)    
@@ -66,10 +66,14 @@ if check_url==True:
                 return test_html
             get_html()
             #progress bar
-            my_bar = st.progress(0)
-            for percent_complete in range(100):
-                time.sleep(0.1)
-                my_bar.progress(percent_complete + 1)
+            # my_bar = st.progress(0)
+            # for percent_complete in range(100):
+            #     time.sleep(0.1)
+            #     my_bar.progress(percent_complete + 1)
+            
+                
+            
+##--------------------------clean text data------------------------------##
         with col2:
             soup = BeautifulSoup(get_html(), 'html.parser')
             text = soup.get_text(separator=' ')
@@ -78,28 +82,26 @@ if check_url==True:
             #cleaned_text2 = int(text).replace("\n","", text)
             #cleaned_text2
                     #progress bar
-            my_bar = st.progress(0)
-            for percent_complete in range(100):
-                time.sleep(0.1)
-                my_bar.progress(percent_complete + 1)
+            # my_bar = st.progress(0)
+            # for percent_complete in range(100):
+            #     time.sleep(0.1)
+            #     my_bar.progress(percent_complete + 1)
+
+##--------------------------recommendations------------------------------##
         with col3:
-           
-            #st.write("Result:")
-            ## language_tool_python
-            
             tool = language_tool_python.LanguageTool('en-US')
-            my_bar = st.progress(0)
-            for percent_complete in range(100):
-                time.sleep(0.1)
-                my_bar.progress(percent_complete + 1)
+            # my_bar = st.progress(0)
+            # for percent_complete in range(100):
+            #     time.sleep(0.1)
+            #     my_bar.progress(percent_complete + 1)
         with col4:
             corrected_text=tool.correct(cleaned_text2)
             #st.write(corrected_text)
                     #progress bar
-            my_bar = st.progress(0)
-            for percent_complete in range(100):
-                time.sleep(0.1)
-                my_bar.progress(percent_complete + 1)
+            # my_bar = st.progress(0)
+            # for percent_complete in range(100):
+            #     time.sleep(0.1)
+            #     my_bar.progress(percent_complete + 1)
 
 ##----------------original/corrected/wrong words----------------##
         #st.write("Misspelled words:")
@@ -164,17 +166,16 @@ if check_url==True:
                 wrong_sentences.append(word)
         #wrong_sentences  
 
-
 ##---------------------split words------------------------------##
         original_words = cleaned_text2.split()
         corrected_words = corrected_text.split()
 
         wordle = pd.DataFrame(corrected_words)
-        wordle.to_csv('file2.csv', index=False, header=False)
+        wordle.to_csv('word_list.csv', index=False, header=False)
         #original_words.to_csv('C:/Users\Guest1\Projects\grammar_checker\wordle_words\"wordle".csv')
         #st.download_button('send words', original_words, 'wordle/csv')
 
-##-------------highlighted sentences/words----------------------##
+##-------------highlighted sentences----------------------##
         #st.write("try")
         list_of_words=[]
         for word in original_words:
@@ -226,7 +227,7 @@ if check_url==True:
 
         # for sentence in underlined_sentence2:
         #     annotated_text(sentence)
-##-------------Carmine----------------------##
+##------------------highlighted words--------------------------##
         def colour_to_word(word, color='black'):
             return f"<text style=color:{color}>{word}</text>"
 
@@ -238,12 +239,32 @@ if check_url==True:
                 text_to_annotated_list.append(colour_to_word(word,color='red'))
             else:
                 text_to_annotated_list.append(word)
-
-        #print(text_to_annotated_list)
-
-
         text_to_annoted = " ".join(text_to_annotated_list)
         #print(text_to_annoted)
+
+##-------------------original/corrected texts-------------------##
+        # with st.expander("See original content"):
+        #     st.write(cleaned_text2)
+        with st.expander("See original content"):
+            for sentence in underlined_sentence:
+                annotated_text(sentence)
+        with st.expander("See the wrong words"):
+            st.markdown(text_to_annoted,unsafe_allow_html=True )
+        with st.expander("See corrected content"):
+            st.write(corrected_text)
+
+##------------------------download------------------------------##
+        st.write("Download files")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.download_button('Original Text', cleaned_text2, 'original_text/txt')
+        with col2:
+            st.download_button('Corrected Text', corrected_text, 'corrected_text/txt')
+##-------------------end of the code-------------------##
+        time.sleep(5)
+    st.success('Done!')
+
+
 ##------------------------pages------------------------------##
         # from streamlit_option_menu import option_menu
         # selected = option_menu(
@@ -276,27 +297,6 @@ if check_url==True:
         #         annotated_text(sentence)
         # if page is "Words":
         #     st.markdown(text_to_annoted,unsafe_allow_html=True )
-##-------------------original/corrected texts-------------------##
-        # with st.expander("See original content"):
-        #     st.write(cleaned_text2)
-        with st.expander("See original content"):
-            for sentence in underlined_sentence:
-                annotated_text(sentence)
-        with st.expander("See the wrong words"):
-            st.markdown(text_to_annoted,unsafe_allow_html=True )
-        with st.expander("See corrected content"):
-            st.write(corrected_text)
-##-------------------download-------------------##
-        st.write("Download files")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.download_button('Original Text', cleaned_text2, 'original_text/txt')
-        with col2:
-            st.download_button('Corrected Text', cleaned_text2, 'corrected_text/txt')
-##-------------------original/corrected texts-------------------##
-
-
-
 
 
 # with st_stdout("code"):
